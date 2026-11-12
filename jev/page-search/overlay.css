@@ -1,0 +1,185 @@
+#jev-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #e8e8f0;
+  box-sizing: border-box;
+}
+
+#jev-search-overlay.jev-hidden {
+  display: none;
+}
+
+#jev-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+#jev-modal {
+  position: relative;
+  width: 620px;
+  max-width: 92vw;
+  background: #16161e;
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+#jev-search-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+#jev-icon {
+  font-size: 18px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+#jev-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #e8e8f0;
+  font-size: 15px;
+  font-family: inherit;
+  caret-color: #7c6af7;
+}
+
+#jev-input::placeholder {
+  color: rgba(232, 232, 240, 0.3);
+}
+
+#jev-btn {
+  background: #7c6af7;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+#jev-btn:hover {
+  background: #6a58e0;
+}
+
+#jev-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#jev-results {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.jev-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.1s;
+  outline: none;
+}
+
+.jev-result:last-child {
+  border-bottom: none;
+}
+
+.jev-result:hover,
+.jev-result:focus {
+  background: rgba(124, 106, 247, 0.12);
+}
+
+.jev-rank {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(124, 106, 247, 0.2);
+  color: #9d8ff5;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.jev-result-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.jev-result-heading {
+  font-weight: 500;
+  color: #e8e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.jev-result-snippet {
+  font-size: 12px;
+  color: rgba(232, 232, 240, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#jev-status {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: rgba(232, 232, 240, 0.4);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.jev-fallback {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: rgba(232, 232, 240, 0.5);
+}
+
+.jev-fallback a {
+  color: #7c6af7;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.jev-fallback a:hover {
+  text-decoration: underline;
+}
+
+/* Highlight on the page when user clicks a result */
+.jev-highlight {
+  animation: jev-flash 2s ease-out forwards;
+  border-radius: 3px;
+}
+
+@keyframes jev-flash {
+  0%   { background-color: rgba(124, 106, 247, 0.4); outline: 2px solid rgba(124, 106, 247, 0.6); }
+  100% { background-color: transparent; outline: 2px solid transparent; }
+}
