@@ -6,7 +6,8 @@
   "permissions": [
     "storage",
     "activeTab",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "https://api.typesafe.ai/*"
@@ -15,7 +16,7 @@
     "toggle-search": {
       "suggested_key": {
         "default": "Ctrl+Shift+F",
-        "mac": "Ctrl+Shift+F"
+        "mac": "Command+Shift+F"
       },
       "description": "Toggle JEV page search overlay"
     }

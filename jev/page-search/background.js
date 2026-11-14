@@ -4,7 +4,25 @@ chrome.commands.onCommand.addListener(async (command) => {
   if (command !== 'toggle-search') return;
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
-  chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
+
+  // Try sending to an already-running content script first
+  try {
+    await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
+  } catch {
+    // Content script not present — tab was open before the extension loaded.
+    // Inject it programmatically then retry.
+    try {
+      await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['overlay.css'] });
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
+      // Brief delay for the listener to register before we send the message
+      setTimeout(() => {
+        chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
+      }, 50);
+    } catch (injectionErr) {
+      // Can't inject on chrome:// pages or the Chrome Web Store — expected
+      console.warn('JEV Page Search: cannot inject on this page.', injectionErr.message);
+    }
+  }
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
