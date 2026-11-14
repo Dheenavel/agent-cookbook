@@ -27,6 +27,30 @@
       line-height: 1.4;
     }
 
+    .search-btn {
+      width: 100%;
+      padding: 11px;
+      background: #7c6af7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .search-btn:hover { background: #6a58e0; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      margin: 0 0 14px;
+      display: none;
+    }
+
     label {
       display: block;
       font-size: 11px;
@@ -50,16 +74,14 @@
       margin-bottom: 10px;
     }
 
-    input:focus {
-      border-color: #7c6af7;
-    }
+    input:focus { border-color: #7c6af7; }
 
-    button {
+    .save-btn {
       width: 100%;
       padding: 9px;
-      background: #7c6af7;
-      color: #fff;
-      border: none;
+      background: rgba(124,106,247,0.15);
+      color: #9d8ff5;
+      border: 1px solid rgba(124,106,247,0.3);
       border-radius: 7px;
       font-size: 13px;
       font-weight: 500;
@@ -67,12 +89,12 @@
       transition: background 0.15s;
     }
 
-    button:hover { background: #6a58e0; }
+    .save-btn:hover { background: rgba(124,106,247,0.25); }
 
     #status {
       margin-top: 10px;
       font-size: 12px;
-      color: rgba(232, 232, 240, 0.5);
+      color: rgba(232, 232, 240, 0.4);
       min-height: 18px;
       text-align: center;
     }
@@ -81,10 +103,10 @@
       margin-top: 14px;
       padding-top: 14px;
       border-top: 1px solid rgba(255,255,255,0.07);
-      color: rgba(232, 232, 240, 0.35);
+      color: rgba(232, 232, 240, 0.3);
       font-size: 11px;
       text-align: center;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     kbd {
@@ -93,13 +115,10 @@
       padding: 1px 5px;
       font-family: monospace;
       font-size: 11px;
+      color: rgba(232, 232, 240, 0.6);
     }
 
-    a {
-      color: #7c6af7;
-      text-decoration: none;
-    }
-
+    a { color: #7c6af7; text-decoration: none; }
     a:hover { text-decoration: underline; }
   </style>
 </head>
@@ -107,14 +126,17 @@
   <h1>JEV Page Search</h1>
   <p class="sub">Semantic search on any webpage.</p>
 
+  <button class="search-btn" id="search-btn">Search this page →</button>
+  <hr class="divider" id="divider" />
+
   <label for="token-input">JEV API Token</label>
   <input id="token-input" type="password" placeholder="Paste your token…" />
-  <button id="save-btn">Save Token</button>
+  <button class="save-btn" id="save-btn">Save Token</button>
 
   <div id="status"></div>
 
   <p class="hint">
-    Press <kbd>Ctrl+Shift+F</kbd> on any page to search.<br>
+    Or press <kbd id="shortcut-hint">Ctrl+Shift+F</kbd> on any page.<br>
     Get your token at <a href="https://typesafe.ai" target="_blank">typesafe.ai</a>
   </p>
 
