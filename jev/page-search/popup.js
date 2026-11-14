@@ -43,21 +43,25 @@ input.addEventListener('keydown', (e) => {
 // Search this page — injects content script if needed then toggles overlay
 searchBtn.addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return;
+  if (!tab?.id) { window.close(); return; }
 
-  window.close();
+  searchBtn.textContent = 'Opening…';
+  searchBtn.disabled = true;
 
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
   } catch {
+    // Content script not present — inject then retry
     try {
       await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['overlay.css'] });
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
-      setTimeout(() => {
-        chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
-      }, 60);
+      await new Promise((r) => setTimeout(r, 80));
+      await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
     } catch (err) {
       console.warn('JEV: cannot inject on this page.', err.message);
     }
   }
+
+  // Close AFTER all async work — avoids popup teardown killing in-flight callbacks
+  window.close();
 });
