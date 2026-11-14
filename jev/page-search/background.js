@@ -5,22 +5,18 @@ chrome.commands.onCommand.addListener(async (command) => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
-  // Try sending to an already-running content script first
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
   } catch {
     // Content script not present — tab was open before the extension loaded.
-    // Inject it programmatically then retry.
     try {
       await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['overlay.css'] });
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
-      // Brief delay for the listener to register before we send the message
-      setTimeout(() => {
-        chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
-      }, 50);
-    } catch (injectionErr) {
-      // Can't inject on chrome:// pages or the Chrome Web Store — expected
-      console.warn('JEV Page Search: cannot inject on this page.', injectionErr.message);
+      // Await the delay so the service worker stays alive until the message is sent
+      await new Promise((r) => setTimeout(r, 80));
+      await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' });
+    } catch (err) {
+      console.warn('JEV Page Search: cannot inject on this page.', err.message);
     }
   }
 });
@@ -30,7 +26,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     handleSearch(message.query, message.chunks, message.apiKey)
       .then(sendResponse)
       .catch((err) => sendResponse({ error: err.message }));
-    return true; // keep message channel open for async response
+    return true;
   }
 });
 
@@ -38,11 +34,16 @@ async function handleSearch(query, chunks, apiKey) {
   const promises = chunks.map((chunk) => scoreChunk(chunk, query, apiKey));
   const scored = await Promise.all(promises);
 
+  // Always return top 5 by score — no hard filter so users always see results
   return scored
-    .filter((r) => r.score >= 2)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
-    .map((r, rank) => ({ rank: rank + 1, index: r.index, heading: r.heading, snippet: r.snippet }));
+    .map((r, rank) => ({
+      rank: rank + 1,
+      index: r.index,
+      heading: r.heading,
+      snippet: r.snippet,
+    }));
 }
 
 async function scoreChunk(chunk, query, apiKey) {
@@ -74,11 +75,11 @@ async function scoreChunk(chunk, query, apiKey) {
 
     if (!res.ok) {
       const body = await res.text();
-      throw new Error(`JEV API error ${res.status}: ${body}`);
+      throw new Error(`JEV API ${res.status}: ${body}`);
     }
 
     const data = await res.json();
-    const rawScore = data.answers.relevance.score;
+    const rawScore = data?.answers?.relevance?.score ?? 0;
     const score = (rawScore / 4) * 10;
 
     return { ...chunk, score };
